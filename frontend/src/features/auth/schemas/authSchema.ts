@@ -7,6 +7,7 @@ export const authSchema = z
     lastName: z.string().optional(),
     email: z.string().email("Вкажіть коректний email"),
     password: z.string().min(8, "Пароль має містити щонайменше 8 символів"),
+    confirmPassword: z.string().optional(),
   })
   .superRefine((values, context) => {
     if (values.mode !== "register") return;
@@ -24,6 +25,20 @@ export const authSchema = z
         code: "custom",
         path: ["lastName"],
         message: "Вкажіть прізвище",
+      });
+    }
+
+    if (!values.confirmPassword) {
+      context.addIssue({
+        code: "custom",
+        path: ["confirmPassword"],
+        message: "Повторіть пароль",
+      });
+    } else if (values.password !== values.confirmPassword) {
+      context.addIssue({
+        code: "custom",
+        path: ["confirmPassword"],
+        message: "Паролі не співпадають",
       });
     }
   });

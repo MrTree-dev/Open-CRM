@@ -1,13 +1,21 @@
 import {
   createUserWithEmailAndPassword,
+  getAdditionalUserInfo,
   getAuth,
+  GoogleAuthProvider,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
   updateProfile,
 } from "firebase/auth";
 import { app } from "./config";
 
 export const auth = getAuth(app);
+export const googleProvider = new GoogleAuthProvider();
+
+googleProvider.setCustomParameters({
+  prompt: "select_account",
+});
 
 export const registerWithEmail = async (
   email: string,
@@ -32,6 +40,19 @@ export const loginWithEmail = async (email: string, password: string) => {
   const credential = await signInWithEmailAndPassword(auth, email, password);
 
   return credential.user;
+};
+
+export const loginWithGoogle = async () => {
+  const credential = await signInWithPopup(auth, googleProvider);
+
+  const user = credential.user;
+
+  return {
+    uid: user.uid,
+    email: user.email,
+    displayName: user.displayName,
+    isNewUser: getAdditionalUserInfo(credential)?.isNewUser ?? false,
+  };
 };
 
 export const logout = async () => {

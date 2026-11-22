@@ -2,8 +2,17 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FirebaseError } from "firebase/app";
-import { loginWithEmail, registerWithEmail } from "../../../../firebase/auth";
+import {
+  loginWithEmail,
+  loginWithGoogle,
+  registerWithEmail,
+} from "../../../../firebase/auth";
 import { authSchema, type AuthFormValues } from "../../schemas/authSchema";
+
+import css from "./AuthForm.module.css";
+import { FaEye, FaGoogle, FaUserPlus } from "react-icons/fa";
+import { FaEyeLowVision, FaRightToBracket } from "react-icons/fa6";
+import { Button } from "../../../../shared/components/Button/Button";
 
 const getFirebaseErrorMessage = (error: unknown) => {
   if (!(error instanceof FirebaseError)) {
@@ -24,6 +33,8 @@ const getFirebaseErrorMessage = (error: unknown) => {
 
 export const AuthForm = () => {
   const [serverError, setServerError] = useState("");
+  const [isPasswordHidden, setIsPasswordHidden] = useState(false);
+  const [isConfirmPasswordHidden, setIsConfirmPasswordHidden] = useState(false);
 
   const {
     register,
@@ -70,75 +81,159 @@ export const AuthForm = () => {
     setServerError("");
   };
 
-  return (
-    <>
-      <h1>{mode === "login" ? "З поверненням!" : "Створіть акаунт"}</h1>
+  const handleIsPasswordHidden = () => {
+    setIsPasswordHidden(prev => !prev);
+  };
 
-      <form onSubmit={onSubmit}>
+  const handleIsConfirmPasswordHidden = () => {
+    setIsConfirmPasswordHidden(prev => !prev);
+  };
+
+  const handleGoogleButton = async () => {
+    await loginWithGoogle();
+  };
+
+  return (
+    <div className={css.auth}>
+      <div className={css.heading}>
+        {mode === "login" ? (
+          <FaRightToBracket size={50} />
+        ) : (
+          <FaUserPlus size={50} />
+        )}
+        <h1>{mode === "login" ? "З поверненням!" : "Створіть акаунт"}</h1>
+        <p>
+          {mode === "login"
+            ? "Увійдіть в свій акаунт, щоб продовжити роботу."
+            : "Почніть керувати власним бізнесом зручніше."}
+        </p>
+      </div>
+
+      <Button
+        onClick={handleGoogleButton}
+        view="secondary"
+      >
+        <FaGoogle />
+        Продовжити з Google
+      </Button>
+
+      <div className={css.divider}>АБО</div>
+
+      <form
+        onSubmit={onSubmit}
+        className={css.form}
+      >
         <input
           type="hidden"
           {...register("mode")}
         />
 
         {mode === "register" && (
-          <>
-            <label>
-              Ім&apos;я
-              <input
-                autoComplete="given-name"
-                {...register("firstName")}
-              />
-            </label>
-            {errors.firstName?.message && <p>{errors.firstName.message}</p>}
+          <div className={css.input_name}>
+            <div>
+              <label>
+                <span>Ім&apos;я</span>
+                <input
+                  autoComplete="given-name"
+                  placeholder="Джон"
+                  {...register("firstName")}
+                />
+              </label>
+              {errors.firstName?.message && <p>{errors.firstName.message}</p>}
+            </div>
 
-            <label>
-              Прізвище
-              <input
-                autoComplete="family-name"
-                {...register("lastName")}
-              />
-            </label>
-            {errors.lastName?.message && <p>{errors.lastName.message}</p>}
-          </>
+            <div>
+              <label>
+                <span>Прізвище</span>
+                <input
+                  autoComplete="family-name"
+                  placeholder="Доу"
+                  {...register("lastName")}
+                />
+              </label>
+              {errors.lastName?.message && <p>{errors.lastName.message}</p>}
+            </div>
+          </div>
         )}
 
-        <label>
-          Email
-          <input
-            type="email"
-            autoComplete="email"
-            {...register("email")}
-          />
-        </label>
-        {errors.email?.message && <p>{errors.email.message}</p>}
+        <div>
+          <label>
+            <span>Email</span>
+            <input
+              type="email"
+              autoComplete="email"
+              placeholder="you@gmail.com"
+              {...register("email")}
+            />
+          </label>
+          {errors.email?.message && <p>{errors.email.message}</p>}
+        </div>
 
-        <label>
-          Password
-          <input
-            type="password"
-            autoComplete={
-              mode === "login" ? "current-password" : "new-password"
-            }
-            {...register("password")}
-          />
-        </label>
-        {errors.password?.message && <p>{errors.password.message}</p>}
+        <div>
+          <label className={css.password}>
+            <span>Пароль</span>
+            <input
+              type={!isPasswordHidden ? "password" : "text"}
+              placeholder="********"
+              autoComplete={
+                mode === "login" ? "current-password" : "new-password"
+              }
+              {...register("password")}
+            />
+            {isPasswordHidden ? (
+              <FaEye
+                size={20}
+                className={css.secret}
+                onClick={handleIsPasswordHidden}
+              />
+            ) : (
+              <FaEyeLowVision
+                size={20}
+                className={css.secret}
+                onClick={handleIsPasswordHidden}
+              />
+            )}
+          </label>
+          {errors.password?.message && <p>{errors.password.message}</p>}
+        </div>
+
+        <div>
+          {mode === "register" && (
+            <label className={css.password}>
+              <span>Повторіть пароль</span>
+              <input
+                type={!isConfirmPasswordHidden ? "password" : "text"}
+                placeholder="********"
+                {...register("confirmPassword")}
+              />
+              {isConfirmPasswordHidden ? (
+                <FaEye
+                  size={20}
+                  className={css.secret}
+                  onClick={handleIsConfirmPasswordHidden}
+                />
+              ) : (
+                <FaEyeLowVision
+                  size={20}
+                  className={css.secret}
+                  onClick={handleIsConfirmPasswordHidden}
+                />
+              )}
+            </label>
+          )}
+          {errors.confirmPassword?.message && (
+            <p>{errors.confirmPassword.message}</p>
+          )}
+        </div>
 
         {serverError && <p role="alert">{serverError}</p>}
 
-        <button
-          type="submit"
-          disabled={isSubmitting}
-        >
-          {isSubmitting
-            ? "Зачекайте..."
-            : mode === "login"
-              ? "Увійти"
-              : "Створити акаунт"}
-        </button>
+        <Button disabled={isSubmitting}>
+          {mode === "login" ? "Увійти" : "Створити акаунт"}
+        </Button>
       </form>
 
-      <p>
+      <div className={css.switch}>
         {mode === "login" ? "Не маєте акаунта?" : "Вже маєте акаунт?"}{" "}
         <button
           type="button"
@@ -146,7 +241,7 @@ export const AuthForm = () => {
         >
           {mode === "login" ? "Зареєструватися" : "Увійти"}
         </button>
-      </p>
-    </>
+      </div>
+    </div>
   );
 };
