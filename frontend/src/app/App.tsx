@@ -4,7 +4,7 @@ import { GuestLayout } from "./layouts/GuestLayout";
 import { ProtectedLayout } from "./layouts/ProtectedLayout";
 import { DashboardPage } from "../pages/DashboardPage/DashboardPage";
 
-// Test comment
+// Test comment #2
 
 export const App = () => {
   return (
