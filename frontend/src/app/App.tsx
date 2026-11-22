@@ -5,6 +5,7 @@ import { ProtectedLayout } from "./layouts/ProtectedLayout";
 import { DashboardPage } from "../pages/DashboardPage/DashboardPage";
 
 // Test comment #2
+// Test commit #3
 
 export const App = () => {
   return (
