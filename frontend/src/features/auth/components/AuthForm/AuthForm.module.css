@@ -1,0 +1,97 @@
+.auth {
+    width: 400px;
+    margin: 0 auto;
+
+    .heading {
+        margin-bottom: 30px;
+
+        svg {
+            background-color: var(--color-accent);
+            fill: var(--color-button);
+            padding: 10px;
+            border-radius: 10px;
+        }
+    }
+
+    .divider {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 20px 0;
+
+        &::before, &::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        &::before {
+            margin-right: 16px;
+        }
+
+        &::after {
+            margin-left: 16px;
+        }
+    }
+
+    .form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+
+        label {
+            display: flex;
+            flex-direction: column;
+            font-weight: bold;
+        }
+
+        input {
+            padding: 10px 10px;
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid var(--color-border);
+            background-color: var(--color-background);
+            margin-top: 10px;
+            transition: all 250ms ease;
+
+            &:focus {
+                background-color: var(--color-accent);
+                border-color: var(--color-button);
+            }
+        }
+
+        .input_name {
+            display: flex;
+            gap: 20px;
+        }
+
+        .password {
+            position: relative;
+
+            .secret {
+                position: absolute;
+                right: 20px;
+                bottom: 10px;
+                cursor: pointer;
+            }
+        }
+
+        p {
+            color: var(--color-error);
+        }
+    }
+
+    .switch {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 0.8rem;
+
+        button {
+            border: none;
+            background-color: var(--color-background);
+            cursor: pointer;
+            color: var(--color-button);
+            font-weight: bold;
+        }
+    }
+}
