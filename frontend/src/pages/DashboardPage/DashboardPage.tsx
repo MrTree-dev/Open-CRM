@@ -10,7 +10,7 @@ export const DashboardPage = () => {
 
   return (
     <>
-      <h1>{user?.displayName}</h1>
+      <h1>Hello {user?.displayName}</h1>
       <button onClick={handleLogout}>Вийти</button>
     </>
   );
